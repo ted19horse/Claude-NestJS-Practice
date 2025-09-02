@@ -1,0 +1,50 @@
+### 1. 회원가입
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "테스트사용자",
+  "email": "test@auth.com",
+  "password": "Test123456",
+  "age": 25
+}
+
+### 2. 로그인
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@auth.com",
+  "password": "Test123456"
+}
+
+### 3. 로그인 후 받은 토큰으로 프로필 조회
+GET http://localhost:3000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEBhdXRoLmNvbSIsImlhdCI6MTc1NjE5NzE5NSwiZXhwIjoxNzU2MjAwNzk1fQ.chXY6gva6ik86pXfyD7mmIQAsPQNRsZnJKsvv-SAY3A
+
+### 4. 잘못된 토큰으로 프로필 조회 (에러)
+GET http://localhost:3000/auth/profile
+Authorization: Bearer some.invalid.token
+
+### 5. 토큰 없이 프로필 조회 (에러)
+GET http://localhost:3000/auth/profile
+
+### 6. 중복 이메일로 회원가입 (에러)
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "중복테스트",
+  "email": "test@auth.com",
+  "password": "Test123456",
+  "age": 30
+}
+
+### 7. 잘못된 비밀번호로 로그인 (에러)
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@auth.com",
+  "password": "WrongPassword"
+}

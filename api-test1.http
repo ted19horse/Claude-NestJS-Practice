@@ -1,0 +1,95 @@
+### 1. 정상적인 사용자 생성
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "정상사용자",
+  "email": "normal@example.com",
+  "age": 25
+}
+
+### 2. 이름이 너무 짧은 경우 (에러)
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "a",
+  "email": "short@example.com",
+  "age": 25
+}
+
+### 3. 잘못된 이메일 형식 (에러)
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "테스트",
+  "email": "잘못된이메일",
+  "age": 25
+}
+
+### 4. 나이가 음수인 경우 (에러)
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "테스트",
+  "email": "test@example.com",
+  "age": -5
+}
+
+### 5. 필수 필드 누락 (에러)
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "이름만있음"
+}
+
+### 6. 허용되지 않은 필드 포함 (에러)
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "테스트",
+  "email": "test@example.com",
+  "age": 25,
+  "hackerField": "악의적인데이터"
+}
+
+### 7. 이메일 중복 (에러)
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "중복테스트",
+  "email": "kim@example.com",
+  "age": 25
+}
+
+### 8. 타입 자동 변환 테스트
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "타입변환",
+  "email": "convert@example.com",
+  "age": "30"
+}
+
+### 9. 수정 시 빈 객체 (에러)
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{}
+
+### 10. 부분 수정 (정상)
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+  "age": 26
+}
+
+### 현재 사용자 목록 확인
+GET http://localhost:3000/users

@@ -1,0 +1,36 @@
+### 1. 데이터베이스에 첫 번째 사용자 생성
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "데이터베이스테스트",
+  "email": "db-test@example.com",
+  "age": 25
+}
+
+### 2. 두 번째 사용자 생성
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "김철수",
+  "email": "kim@db-test.com",
+  "age": 30
+}
+
+### 3. 모든 사용자 조회 (데이터베이스에서)
+GET http://localhost:3000/users
+
+### 4. 특정 사용자 조회
+GET http://localhost:3000/users/1
+
+### 5. 사용자 수정
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+  "age": 26
+}
+
+### 6. 사용자 삭제
+DELETE http://localhost:3000/users/2

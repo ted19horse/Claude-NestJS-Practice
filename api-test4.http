@@ -1,0 +1,33 @@
+### 1. 첫 번째 사용자 생성
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "테스트1",
+  "email": "duplicate@test.com",
+  "age": 25
+}
+
+### 2. 같은 이메일로 두 번째 사용자 생성 시도 (에러 발생해야 함)
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "테스트2",
+  "email": "duplicate@test.com",
+  "age": 30
+}
+
+### 존재하지 않는 사용자 조회
+GET http://localhost:3000/users/999
+
+### 존재하지 않는 사용자 수정
+PUT http://localhost:3000/users/999
+Content-Type: application/json
+
+{
+  "age": 30
+}
+
+### 존재하지 않는 사용자 삭제
+DELETE http://localhost:3000/users/999
