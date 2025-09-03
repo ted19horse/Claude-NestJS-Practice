@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService, JwtPayload } from '../auth.service';
@@ -18,6 +18,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload) {
     console.log('🎯 JwtStrategy.validate() 호출됨');
     console.log('📦 받은 payload:', payload);
+
+    // Access Token인지 확인 (Access/Refresh token에서 추가)
+    if (payload.type && payload.type !== 'access') {
+      throw new UnauthorizedException('Access Token이 아닙니다.');
+    }
 
     const user = await this.authService.findUserByPayload(payload);
 

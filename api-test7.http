@@ -1,0 +1,33 @@
+# api-test-refresh.http (새로 생성)
+
+### 1. 회원가입 (토큰 쌍 받기)
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "테스트유저",
+  "email": "test@example.com",
+  "password": "Test1234",
+  "age": 25
+}
+
+### 2. 로그인 (토큰 쌍 받기)
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test1234"
+}
+
+### 3. Access Token으로 프로필 조회
+GET http://localhost:3000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NTY4NjUxMjcsImV4cCI6MTc1Njg2NjAyN30.YBH_kietwVexGFsdJ8Cmveu09Ih2javldRY5pu-xZi0
+
+### 4. Refresh Token으로 새 Access Token 받기
+POST http://localhost:3000/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzU2ODY1MTI3LCJleHAiOjE3NTc0Njk5Mjd9.Iz0vBmQlJ2hsZEB6bIJVPYOmGUxvs7ZraaQgMGUu3iI"
+}

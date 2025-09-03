@@ -6,14 +6,15 @@ import { User } from '../users/entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshToken } from './entities/refresh-token.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, RefreshToken]), // RefreshToken (Access/Refresh token에서 추가)
     PassportModule,
     JwtModule.register({
       secret: 'your-super-secret-jwt-key', // 실제로는 환경변수 사용
-      signOptions: { expiresIn: '1h' }, // 토큰 만료 시간
+      signOptions: { expiresIn: '15m' }, // 토큰 만료 시간, Refresh Token 추가로 Access Token은 1시간에서 15분으로 단축
     }),
   ],
   controllers: [AuthController],
