@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis/redis.module'; // (토큰 블랙리스트에서 추가)
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     PostsModule,
     AuthModule,
+    RedisModule, // (토큰 블랙리스트에서 추가)
   ],
   controllers: [AppController],
   providers: [AppService],

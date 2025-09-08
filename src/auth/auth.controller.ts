@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -51,5 +59,12 @@ export class AuthController {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
       user: req.user, // JwtStrategy에서 validate 후 저장된 사용자 정보
     };
+  }
+
+  // 로그아웃 (토큰 블랙리스트에서 추가)
+  @Post('logout')
+  @UseGuards(JwtAuthGuard) // Access Token 필요
+  async logout(@Headers('authorization') authHeader: string) {
+    return this.authService.logout(authHeader);
   }
 }

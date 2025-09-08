@@ -1,0 +1,26 @@
+# api-test-blacklist.http (새로 생성)
+
+### 1. 로그인 (토큰 받기)
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test1234"
+}
+
+> {%
+    client.global.set("auth_token", response.body.accessToken);
+ %}
+
+### 2. 토큰으로 프로필 조회 (정상 동작)
+GET http://localhost:3000/auth/profile
+Authorization: Bearer {{ auth_token}}
+
+### 3. 로그아웃 (토큰 블랙리스트 등록)
+POST http://localhost:3000/auth/logout
+Authorization: Bearer {{ auth_token}}
+
+### 4. 같은 토큰으로 다시 프로필 조회 (실패해야 함)
+GET http://localhost:3000/auth/profile
+Authorization: Bearer {{ auth_token}}

@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshToken } from './entities/refresh-token.entity';
+import { RedisService } from '../redis/redis.service';
 
 export interface JwtPayload {
   sub: number; // 사용자 ID
@@ -24,9 +25,10 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(RefreshToken) // 추가
+    @InjectRepository(RefreshToken) // (Access/Refresh token에서 추가)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     private readonly jwtService: JwtService,
+    private readonly redisService: RedisService, // (토큰 블랙리스트에서 추가)
   ) {}
 
   // 회원가입
@@ -240,5 +242,58 @@ export class AuthService {
       throw new UnauthorizedException('유효하지 않은 토큰입니다.');
     }
     return user;
+  }
+
+  // 타입 안정성 보장
+  private isJwtPayload(value: unknown): value is JwtPayload {
+    if (!value || typeof value !== 'object') return false;
+
+    const obj = value as Record<string, unknown>;
+    return (
+      typeof obj.sub === 'number' &&
+      typeof obj.email === 'string' &&
+      typeof obj.exp === 'number'
+    );
+  }
+
+  // 로그아웃 (토큰 블랙리스트에서 추가)
+  async logout(authHeader: string) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new BadRequestException('토큰이 필요합니다.');
+    }
+
+    const accessToken = authHeader.substring(7); // 'Bearer ' 제거
+
+    try {
+      // 토큰 검증 및 정보 추출
+      const payload: unknown = this.jwtService.verify(accessToken);
+
+      if (!this.isJwtPayload(payload)) {
+        throw new UnauthorizedException('잘못된 토큰 형식입니다.');
+      }
+
+      // Access Token인지 확인
+      if (payload.type && payload.type !== 'access') {
+        throw new UnauthorizedException('Access Token이 아닙니다.');
+      }
+
+      // 토큰 남은 만료 시간 계산
+      const currentTime = Math.floor(Date.now() / 1000);
+      const remainingTime = payload.exp! - currentTime; // ! 사용 (exp는 JWT에서 자동 추가)
+
+      if (remainingTime > 0) {
+        // Redis 블랙리스트에 추가 (남은 시간동안 유지)
+        await this.redisService.blacklistToken(accessToken, remainingTime);
+      }
+
+      // Refresh Token도 DB에서 삭제 (완전 로그아웃)
+      await this.refreshTokenRepository.delete({ userId: payload.sub });
+
+      return {
+        message: '로그아웃이 완료되었습니다.',
+      };
+    } catch {
+      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+    }
   }
 }
